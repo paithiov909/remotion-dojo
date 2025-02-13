@@ -1,0 +1,81 @@
+---
+title: 1. Overview
+sidebar_position: 1
+---
+
+## Remotionについて
+
+### Remotionとは？
+
+[Remotion](https://www.remotion.dev/)は、Reactコンポーネントを元に動画をつくれるライブラリ。Remotion AGという企業が中心になって開発されている。
+
+動画にしたいReactコンポーネントを[Composition](https://www.remotion.dev/docs/terminology/composition)というコンポーネントに渡してやることで、動画としてレンダリングすることができる。Reactコンポーネントのなかでは、[`useCurrentFrame()`](https://www.remotion.dev/docs/use-current-frame)というフックから「動画にしたときに何フレーム目にあたるか」を表す値を取得できるため、この値に応じてstyle属性などを変化させることでアニメーションをつくることができる。
+
+動画ファイルを書き出す大雑把な仕組みとしては、[\@remotion/bundler](https://www.remotion.dev/docs/bundler)でCompositionを何らかの静的なWebページに変換したうえで、[\@remotion/renderer](https://www.remotion.dev/docs/renderer)がフレームを進めながらpuppeteer + [chrome-headless-shell](https://developer.chrome.com/blog/chrome-headless-shell)を使ってスクリーンショットを撮影、バンドルされているffmpegを使ってスクリーンショットを動画にまとめるといったことをしているらしい。
+
+Compositionは、[Remotion Studio](https://www.remotion.dev/docs/terminology/studio)というWebアプリを使って動画ファイルとして書き出さずにプレビューできるほか、[\@remotion/player](https://www.remotion.dev/docs/player)というライブラリを使って動画プレイヤー風のReactコンポーネントとしてReactアプリに埋め込むこともできる。
+
+また、動画ファイルの書き出しに、AWS Lambdaを利用できる仕組みなども用意されている。詳しくは[Server-Side Rendering](https://www.remotion.dev/docs/ssr)を参照のこと。
+
+
+### ライセンス
+
+**Remotionはソースコードこそ公開されているものの、OSSではない**。[Remotion License](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md)という独自ライセンスが適用される^[coreではない一部のパッケージのなかにはMITライセンスなどが適用されているものもある]。基本的に、個人開発の場合についてのみ商用利用含め無料で利用でき、Remotionを使用する開発者を複数人要する事業所においてはライセンスを購入する必要がある。ライセンスの購入は[ Licensing | Remotion Pro](https://www.remotion.pro/license) からおこなえる。
+
+
+### 使い方のイメージ
+
+たとえば、次のような動画をReactコンポーネントとして書くことができる。
+
+::: {.panel-tabset group="Overview"}
+
+## Video
+
+```{=mdx}
+import { Player } from "@remotion/player";
+import { MyComp } from "@site/src/components/Overview.tsx";
+
+export const MyPlayer = () => (
+  <Player
+    component={MyComp}
+    durationInFrames={180}
+    compositionWidth={768}
+    compositionHeight={432}
+    fps={30}
+    controls
+    loop
+    style={{ width: "100%" }}
+  >
+  </Player>
+);
+
+<MyPlayer></MyPlayer>
+
+---
+```
+
+## Code
+
+```{.tsx filename="Overview.tsx"}
+{{< include ../../src/components/Overview.tsx >}}
+```
+
+:::
+
+ポイントとして、動画にするためのReactコンポーネントは透過的なものでなければならない。RemotionによるReactコンポーネントのレンダリングは、pupetteerのインスタンスを複数立ち上げたうえで並列しておこなわれるため、インスタンス間で同期しない値に応じてコンポーネントの見た目が変化するような書き方をすると、動画ファイルにまとめたときにフレームが上手くつながらず、動きが無秩序にブレてしまう。
+
+したがって、たとえば、CSSアニメーションや`Math.random()`などは、基本的にこれらのコンポーネントの中で使ってはいけない。この点については[Flickering](https://www.remotion.dev/docs/flickering)に詳しく書かれている。
+
+
+## この資料のねらい
+
+この資料では「Remotionでこういうのがつくれそう」ということをなんとなく把握できるような作例をまとめる。
+
+Remotionを使って製作されている動画の例は、次のページにもまとめられているが、これらを見てRemotionを活用できるようになるのはなかなか難しいだろうと思われる。
+
+- [List of resources](https://www.remotion.dev/docs/resources)
+- [Showcase](https://www.remotion.dev/showcase)
+
+そこで、もうすこし基本的なクリエイティブコーディングの作例っぽいものを個人的な練習がてらまとめたいと思い、この資料を用意することにした。
+
+個人的な練習なので、必ずしも綺麗なコードを掲載しているわけではない。また、RemotionのAPIについてのわかりやすい説明はしない。Remotionの使い方を知りたい場合、公式のドキュメントを読んでもらいたい。

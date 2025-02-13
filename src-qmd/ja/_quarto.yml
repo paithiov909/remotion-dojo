@@ -1,0 +1,13 @@
+project:
+  type: docusaurus
+  output-dir: ../../docs
+
+format:
+  docusaurus-md:
+    code-fold: true
+
+knitr:
+  opts_chunk:
+    tidy: "styler"
+    collapse: true
+    comment: "#>"

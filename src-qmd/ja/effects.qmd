@@ -1,0 +1,49 @@
+---
+title: 3. Effects
+sidebar_position: 3
+draft: true
+---
+
+## フィルタ
+
+CSSプロパティやSVGの属性を時間にしたがって変化させることによって、さまざまなエフェクトを実現することができる。基本的な属性を変化させるだけでもいろいろできるほか、一見するとどうすれば実現できるかわからないようなエフェクトも、filterを使うと再現できたりする。
+
+* [filter - CSS: カスケーディングスタイルシート | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/filter)
+* [\<filter\> - SVG: スケーラブルベクターグラフィック | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Element/filter)
+
+たとえば、次の例はテキストが細くなって消えるようなエフェクトを[\<feMorphology\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMorphology)を使って再現しようとしたもの。
+
+::: {.panel-tabset group="Dropshadow"}
+
+## Video
+
+```{=mdx}
+import { Player } from "@remotion/player";
+import { DropshadowText } from "@site/src/components/Effects/Dropshadow.tsx";
+
+export const MyPlayer1 = () => (
+  <Player
+    component={DropshadowText}
+    durationInFrames={130}
+    compositionWidth={768}
+    compositionHeight={432}
+    fps={30}
+    controls
+    loop
+    style={{ width: "100%" }}
+  >
+  </Player>
+);
+
+<MyPlayer1></MyPlayer1>
+
+---
+```
+
+## Code
+
+```{.tsx filename="Effects/Dropshadow.tsx"}
+{{< include ../../src/components/Effects/Dropshadow.tsx >}}
+```
+
+:::

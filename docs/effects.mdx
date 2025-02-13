@@ -1,0 +1,147 @@
+---
+title: 3. Effects
+sidebar_position: 3
+draft: true
+---
+
+
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## フィルタ
+
+CSSプロパティやSVGの属性を時間にしたがって変化させることによって、さまざまなエフェクトを実現することができる。基本的な属性を変化させるだけでもいろいろできるほか、一見するとどうすれば実現できるかわからないようなエフェクトも、filterを使うと再現できたりする。
+
+-   [filter - CSS: カスケーディングスタイルシート \|
+    MDN](https://developer.mozilla.org/ja/docs/Web/CSS/filter)
+-   [\<filter\> - SVG: スケーラブルベクターグラフィック \|
+    MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Element/filter)
+
+たとえば、次の例はテキストが細くなって消えるようなエフェクトを[\<feMorphology\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMorphology)を使って再現しようとしたもの。
+
+<Tabs groupId="Dropshadow">
+<TabItem value="Video">
+````mdx-code-block
+import { Player } from "@remotion/player";
+import { DropshadowText } from "@site/src/components/Effects/Dropshadow.tsx";
+
+export const MyPlayer1 = () => (
+  <Player
+    component={DropshadowText}
+    durationInFrames={130}
+    compositionWidth={768}
+    compositionHeight={432}
+    fps={30}
+    controls
+    loop
+    style={{ width: "100%" }}
+  >
+  </Player>
+);
+
+<MyPlayer1></MyPlayer1>
+
+---
+````
+</TabItem>
+<TabItem value="Code">
+
+```tsx title="Effects/Dropshadow.tsx"
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+  Easing,
+} from "remotion";
+import React, { useMemo } from "react";
+
+export const DropshadowText: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+
+  const inAmount = useMemo(() => {
+    return interpolate(
+      frame,
+      [0, 30],
+      [0, 1],
+      {
+        easing: Easing.bounce,
+        extrapolateRight: "clamp",
+      }
+    );
+  }, [frame]);
+  const dx = useMemo(() => {
+    return interpolate(
+      frame,
+      [10, 50],
+      [-12, 24],
+      {
+        easing: Easing.cubic,
+        extrapolateRight: "clamp",
+      }
+    );
+  }, [frame]);
+  const outAmount = useMemo(() => {
+    return interpolate(
+      frame,
+      [60, 90],
+      [0, 1],
+      {
+        easing: Easing.cubic,
+        extrapolateRight: "clamp",
+      }
+    );
+  }, [frame]);
+
+  return (
+    <>
+      <svg
+        width={width}
+        height={height}
+        style={{ overflow: "visible" }}
+      >
+        <defs>
+          <filter id="shadow">
+            <feMorphology operator="erode" radius={10 * outAmount} />
+            <feDropShadow
+              dx={dx}
+              dy={8}
+              stdDeviation={3}
+              floodOpacity={0.8}
+              floodColor="gold"
+            />
+          </filter>
+        </defs>
+      </svg>
+      <AbsoluteFill
+        style={{
+          backgroundColor: "antiquewhite",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <h2
+          style={{
+            color: "firebrick",
+            textAlign: "center",
+            fontFamily: "sans-serif",
+            fontSize: 64,
+            filter: "url(#shadow)",
+            transform: `scale(${inAmount})`,
+            opacity: 1 - outAmount,
+          }}
+        >
+          Hello, Remotion!!
+        </h2>
+      </AbsoluteFill>
+    </>
+  );
+};
+
+```
+
+</TabItem>
+</Tabs>
