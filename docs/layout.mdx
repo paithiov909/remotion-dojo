@@ -146,7 +146,6 @@ export const ResizeCircle: React.FC = () => {
           <AbsoluteFill style={{ backgroundColor: "#292a33" }}>
             <svg width={width} height={height} >
               <ResizingCircle
-                key={i}
                 startRadius={radii[i]}
                 endRadius={endRadius}
                 cx={width / 2}
@@ -212,12 +211,12 @@ import React, { useMemo } from "react";
 import { ResizingCircle } from "./ResizeCircle";
 
 const Circles: React.FC = () => {
-  const MARGIN = 32;
-  const COLS = 15;
-  const ROWS = 12;
-
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
+
+  const margin = 32;
+  const cols = 15;
+  const rows = 12;
 
   const opacity = useMemo(() => {
     return interpolate(
@@ -237,12 +236,12 @@ const Circles: React.FC = () => {
 
   return (
     <svg width={width} height={height} style={{ overflow: "visible", opacity }}>
-      {new Array(COLS).fill(0).map((_, i) => {
-        return new Array(ROWS).fill(0).map((__, j) => {
+      {new Array(cols).fill(0).map((_, i) => {
+        return new Array(rows).fill(0).map((__, j) => {
           const key = `${i}-${j}`;
-          const r = random(`${key}-${iteration}`) * MARGIN / 2;
-          const x = i * (width + MARGIN) / COLS;
-          const y = j * (height + MARGIN) / ROWS;
+          const r = random(`${key}-${iteration}`) * margin / 2;
+          const x = i * (width + margin) / cols;
+          const y = j * (height + margin) / rows;
           return (
             <ResizingCircle
               key={key}
@@ -303,7 +302,7 @@ export const MyPlayer3 = () => (
 </TabItem>
 <TabItem value="Code">
 
-```tsx title="Repeat/RepeatDiv.tsx"
+```tsx title="Layout/RepeatDiv.tsx"
 import { noise2D } from "@remotion/noise";
 import {
   AbsoluteFill,
@@ -317,16 +316,18 @@ import React, { useMemo } from "react";
 const Shapes: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const MARGIN = 24;
-  const N = MARGIN - 2;
+
+  const margin = 24;
+  const n = margin - 2;
+
   const time = useMemo(() => frame / fps * 1.2, [frame]);
 
   return (
     <>
-      {new Array(N).fill(0).map((_, i) => {
-        const noise = noise2D(i, MARGIN, time);
-        const l = 12 + MARGIN * Math.abs(noise);
-        const r = MARGIN * interpolate(noise, [-1, 1], [0, 1], { easing: Easing.cubic })
+      {new Array(n).fill(0).map((_, i) => {
+        const noise = noise2D(i, margin, time);
+        const l = 12 + margin * Math.abs(noise);
+        const r = margin * interpolate(noise, [-1, 1], [0, 1], { easing: Easing.cubic })
         return (
           <div
             key={i}
@@ -397,7 +398,6 @@ export const MyPlayer4 = () => (
 
 ```tsx title="Layout/OverlapCircle.tsx"
 import {
-  AbsoluteFill,
   useCurrentFrame,
   useVideoConfig,
   random,
@@ -411,52 +411,45 @@ export const OverlapCircle: React.FC = () => {
   const { durationInFrames, width, height } = useVideoConfig();
 
   const numCircles = 40;
-  const radius = useMemo(() => {
+  const circles = useMemo(() => {
+    const step = interpolate(
+      frame,
+      [0, durationInFrames - 30],
+      [0, numCircles],
+      {
+        easing: Easing.out(Easing.cubic),
+      }
+    );
     return new Array(numCircles)
-    .fill(0)
-    .map((_, i) => i * 3);
-  }, [numCircles]);
-  const step = interpolate(
-    frame,
-    [0, durationInFrames - 30],
-    [0, numCircles],
-    {
-      easing: Easing.out(Easing.cubic),
-    }
-  );
-  const circles = radius.slice(0, Math.round(step));
+      .fill(0)
+      .map((_, i) => i * 3)
+      .slice(0, Math.round(step));
+  }, [frame]);
 
   return (
-    <AbsoluteFill
+    <svg
       style={{
+        position: "absolute",
+        transformBox: "fill-box",
         backgroundColor: "#f3eed5",
-        justifyContent: "center",
-        alignItems: "center",
       }}
+      viewBox={`0 0 ${width} ${height}`}
     >
       {circles.map((r, i) => {
         return (
-          <svg
+          <circle
             key={i}
-            style={{
-              position: "absolute",
-              transformBox: "fill-box",
-            }}
-            viewBox={`0 0 ${width} ${height}`}
+            cx={r}
+            cy={r}
+            r={r}
+            fill="none"
+            stroke="#e5af9b"
+            strokeWidth={3 * random(i)}
             transform={`translate(${r}, ${r})`}
-          >
-            <circle
-              cx={r}
-              cy={r}
-              r={r}
-              fill="none"
-              stroke="#e5af9b"
-              strokeWidth={3 * random(i)}
-            />
-          </svg>
+          />
         );
       })}
-    </AbsoluteFill>
+    </svg>
   );
 };
 
@@ -493,7 +486,7 @@ export const MyPlayer5 = () => (
 </TabItem>
 <TabItem value="Code">
 
-```tsx title="Repeat/OverlapDiv.tsx"
+```tsx title="Layout/OverlapDiv.tsx"
 import {
   AbsoluteFill,
   useCurrentFrame,
@@ -510,18 +503,36 @@ export const OverlapDiv: React.FC = () => {
   const { durationInFrames, width, height } = useVideoConfig();
 
   const numCircles = 70;
-  const pos = useMemo(() =>
+  const props = useMemo(() =>
     new Array(numCircles)
       .fill(0)
       .map((_, i) => {
+        const offset = interpolate(
+          frame,
+          [0, durationInFrames - 10],
+          [-50, 150],
+          {
+            easing: Easing.linear
+          }
+        ) * random(i) * 2.4;
         return {
           r: interpolate(random(i), [0, 1], [20, 100]),
-          x: interpolate(random(i * width), [0, 1], [-50, width + 150]),
-          y: interpolate(random(i * height), [0, 1], [0, height]),
-          color: interpolateColors(random(i), [0, 1], ["#FF0000", "#00FF00"])
+          top: interpolate(random(i * height), [0, 1], [0, height]),
+          left: interpolate(random(i * width), [0, 1], [-50, width + 150]) - offset,
+          borderColor: interpolateColors(random(i), [0, 1], ["#FF0000", "#00FF00",]),
+          borderStyle: i % 2 ? "outset" : "inset",
+          borderWidth: random(i) * 16,
+          blurAmount: interpolate(
+            numCircles - i,
+            [0, numCircles],
+            [0, 1.4],
+            {
+              easing: Easing.cubic
+            }
+          ),
         };
       }),
-    [numCircles]
+    [frame]
   );
 
   return (
@@ -531,38 +542,22 @@ export const OverlapDiv: React.FC = () => {
         isolation: "isolate",
       }}
     >
-      {pos.map(({ r, x, y, color }, i) => {
-        const offset = interpolate(
-          frame,
-          [0, durationInFrames - 10],
-          [-50, 150],
-          {
-            easing: Easing.linear
-          }
-        ) * random(i) * 2.4;
-        const blur = interpolate(
-          pos.length - i,
-          [0, pos.length],
-          [0, 1.4],
-          {
-            easing: Easing.cubic
-          }
-        );
+      {props.map(({ r, top, left, borderColor, borderStyle, borderWidth, blurAmount }, i) => {
         return (
           <div
             key={i}
             style={{
               position: "absolute",
-              top: y,
-              left: x - offset,
+              top,
+              left,
               width: r,
               height: r,
               borderRadius: r,
-              borderStyle: i % 2 ? "outset" : "inset",
-              borderColor: color,
-              borderWidth: random(i) * 16,
+              borderStyle,
+              borderColor,
+              borderWidth,
               mixBlendMode: "exclusion",
-              filter: `blur(${blur}px)`
+              filter: `blur(${blurAmount}px)`
             }}
           ></div>
         );

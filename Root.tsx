@@ -1,7 +1,7 @@
 import { Composition } from "remotion";
 import {
-  DropshadowText,
-} from "./src/components/Effects/Dropshadow";
+  TrimCircle,
+} from "./src/components/Effects/TrimCircle";
 import {
   MyComp1,
   MyComp2,
@@ -20,8 +20,8 @@ export const RemotionRoot: React.FC = () => {
     <>
       <Composition
         id="MyComp"
-        component={DropshadowText}
-        durationInFrames={8 * fps}
+        component={TrimCircle}
+        durationInFrames={6 * fps}
         fps={fps}
         width={width}
         height={height}

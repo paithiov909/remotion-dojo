@@ -1,15 +1,13 @@
 import {
   AbsoluteFill,
-  interpolate,
   useCurrentFrame,
-  useVideoConfig,
+  interpolate,
   Easing,
 } from "remotion";
 import React, { useMemo } from "react";
 
 export const DropshadowText: React.FC = () => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
 
   const inAmount = useMemo(() => {
     return interpolate(
@@ -47,11 +45,7 @@ export const DropshadowText: React.FC = () => {
 
   return (
     <>
-      <svg
-        width={width}
-        height={height}
-        style={{ overflow: "visible" }}
-      >
+      <svg>
         <defs>
           <filter id="shadow">
             <feMorphology operator="erode" radius={10 * outAmount} />

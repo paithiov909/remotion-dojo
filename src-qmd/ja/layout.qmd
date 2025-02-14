@@ -165,7 +165,7 @@ export const MyPlayer3 = () => (
 
 ## Code
 
-```{.tsx filename="Repeat/RepeatDiv.tsx"}
+```{.tsx filename="Layout/RepeatDiv.tsx"}
 {{< include ../../src/components/Layout/RepeatDiv.tsx  >}}
 ```
 
@@ -240,7 +240,7 @@ export const MyPlayer5 = () => (
 
 ## Code
 
-```{.tsx filename="Repeat/OverlapDiv.tsx"}
+```{.tsx filename="Layout/OverlapDiv.tsx"}
 {{< include ../../src/components/Layout/OverlapDiv.tsx  >}}
 ```
 

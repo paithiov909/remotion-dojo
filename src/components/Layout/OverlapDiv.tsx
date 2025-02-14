@@ -14,18 +14,36 @@ export const OverlapDiv: React.FC = () => {
   const { durationInFrames, width, height } = useVideoConfig();
 
   const numCircles = 70;
-  const pos = useMemo(() =>
+  const props = useMemo(() =>
     new Array(numCircles)
       .fill(0)
       .map((_, i) => {
+        const offset = interpolate(
+          frame,
+          [0, durationInFrames - 10],
+          [-50, 150],
+          {
+            easing: Easing.linear
+          }
+        ) * random(i) * 2.4;
         return {
           r: interpolate(random(i), [0, 1], [20, 100]),
-          x: interpolate(random(i * width), [0, 1], [-50, width + 150]),
-          y: interpolate(random(i * height), [0, 1], [0, height]),
-          color: interpolateColors(random(i), [0, 1], ["#FF0000", "#00FF00"])
+          top: interpolate(random(i * height), [0, 1], [0, height]),
+          left: interpolate(random(i * width), [0, 1], [-50, width + 150]) - offset,
+          borderColor: interpolateColors(random(i), [0, 1], ["#FF0000", "#00FF00",]),
+          borderStyle: i % 2 ? "outset" : "inset",
+          borderWidth: random(i) * 16,
+          blurAmount: interpolate(
+            numCircles - i,
+            [0, numCircles],
+            [0, 1.4],
+            {
+              easing: Easing.cubic
+            }
+          ),
         };
       }),
-    [numCircles]
+    [frame]
   );
 
   return (
@@ -35,38 +53,22 @@ export const OverlapDiv: React.FC = () => {
         isolation: "isolate",
       }}
     >
-      {pos.map(({ r, x, y, color }, i) => {
-        const offset = interpolate(
-          frame,
-          [0, durationInFrames - 10],
-          [-50, 150],
-          {
-            easing: Easing.linear
-          }
-        ) * random(i) * 2.4;
-        const blur = interpolate(
-          pos.length - i,
-          [0, pos.length],
-          [0, 1.4],
-          {
-            easing: Easing.cubic
-          }
-        );
+      {props.map(({ r, top, left, borderColor, borderStyle, borderWidth, blurAmount }, i) => {
         return (
           <div
             key={i}
             style={{
               position: "absolute",
-              top: y,
-              left: x - offset,
+              top,
+              left,
               width: r,
               height: r,
               borderRadius: r,
-              borderStyle: i % 2 ? "outset" : "inset",
-              borderColor: color,
-              borderWidth: random(i) * 16,
+              borderStyle,
+              borderColor,
+              borderWidth,
               mixBlendMode: "exclusion",
-              filter: `blur(${blur}px)`
+              filter: `blur(${blurAmount}px)`
             }}
           ></div>
         );

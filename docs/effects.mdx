@@ -1,7 +1,6 @@
 ---
 title: 3. Effects
 sidebar_position: 3
-draft: true
 ---
 
 
@@ -19,7 +18,7 @@ CSSプロパティやSVGの属性を時間にしたがって変化させるこ�
 -   [\<filter\> - SVG: スケーラブルベクターグラフィック \|
     MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Element/filter)
 
-たとえば、次の例はテキストが細くなって消えるようなエフェクトを[\<feMorphology\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMorphology)を使って再現しようとしたもの。
+たとえば、次の例はテキストが細くなって消えるようなエフェクトを[\<feMorphology\>](https://developer.mozilla.org/ja/docs/Web/SVG/Element/feMorphology)を使って再現しようとしたもの。
 
 <Tabs groupId="Dropshadow">
 <TabItem value="Video">
@@ -51,16 +50,14 @@ export const MyPlayer1 = () => (
 ```tsx title="Effects/Dropshadow.tsx"
 import {
   AbsoluteFill,
-  interpolate,
   useCurrentFrame,
-  useVideoConfig,
+  interpolate,
   Easing,
 } from "remotion";
 import React, { useMemo } from "react";
 
 export const DropshadowText: React.FC = () => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
 
   const inAmount = useMemo(() => {
     return interpolate(
@@ -98,11 +95,7 @@ export const DropshadowText: React.FC = () => {
 
   return (
     <>
-      <svg
-        width={width}
-        height={height}
-        style={{ overflow: "visible" }}
-      >
+      <svg>
         <defs>
           <filter id="shadow">
             <feMorphology operator="erode" radius={10 * outAmount} />
@@ -145,3 +138,128 @@ export const DropshadowText: React.FC = () => {
 
 </TabItem>
 </Tabs>
+
+また、次の例はTurbulent
+Displaceのような「滲み」をつくるエフェクトを再現しようとしたもの。
+
+<Tabs groupId="TurbulentDisplace">
+<TabItem value="Video">
+````mdx-code-block
+import { TurbulentDisplace } from "@site/src/components/Effects/TurbulentDisplace.tsx";
+
+export const MyPlayer2 = () => (
+  <Player
+    component={TurbulentDisplace}
+    durationInFrames={180}
+    compositionWidth={768}
+    compositionHeight={432}
+    fps={30}
+    controls
+    loop
+    style={{ width: "100%" }}
+  >
+  </Player>
+);
+
+<MyPlayer2></MyPlayer2>
+
+---
+````
+</TabItem>
+<TabItem value="Code">
+
+```tsx title="Effects/TurbulentDisplace.tsx"
+import {
+  makeCircle,
+} from "@remotion/shapes";
+import {
+  warpPath,
+  WarpPathFn,
+} from "@remotion/paths";
+import {
+  AbsoluteFill,
+  useCurrentFrame,
+  useVideoConfig,
+  random,
+  interpolate,
+  Easing,
+} from "remotion";
+import React, { useMemo } from "react";
+
+export const TurbulentDisplace: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { durationInFrames, width, height } = useVideoConfig();
+
+  const r = 72;
+  const scale = useMemo(() => {
+    return interpolate(
+      frame,
+      [0, 60, 61, durationInFrames],
+      [0, 1, 1.2, 10],
+      {
+        easing: Easing.out(Easing.circle),
+      }
+    );
+  }, [frame]);
+  const radius = r * scale;
+  const fn: WarpPathFn = ({ x, y }) => ({
+    x: x + random(scale > 1 ? 0 : frame) * 3,
+    y: y + random(scale > 1 ? 0 : frame) * 4,
+  });
+  const warpedPath = useMemo(() => {
+    const { path } = makeCircle({ radius: radius });
+    return warpPath(
+      path,
+      fn
+    );
+  }, [frame]);
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: "whitesmoke" }}>
+      <svg
+        style={{
+          transformBox: "fill-box",
+          overflow: "visible"
+        }}
+        viewBox={`0 0 ${width} ${height}`}
+        transform={`translate(${width / 2 - radius}, ${height / 2 - radius})`}
+      >
+        <filter id="displacement">
+          <feTurbulence
+            type="fractalNoise" // "Turbulence"ではない
+            baseFrequency={0.04} // 周波数。大きくすると滲みが大きくなる
+            numOctaves={4} // 大きくすると滲みのディテールが増すが、計算量も増える
+            seed={1}
+            result="Noise"
+          />
+          <feDisplacementMap
+            in2="Noise"
+            in="SourceGraphic"
+            scale={radius}
+            xChannelSelector="A"
+            yChannelSelector="A"
+          />
+        </filter>
+        <path
+          d={warpedPath}
+          fill="midnightblue"
+          stroke="none"
+          filter="url(#displacement)"
+        />
+      </svg>
+    </AbsoluteFill>
+  );
+};
+
+```
+
+</TabItem>
+</Tabs>
+
+ここでは[\<feTurbulence\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence)を使っている。この作例のように[\<feDisplacementMap\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDisplacementMap)の`scale`を徐々に大きくする場合、マッピングする元の画像も徐々に大きくしないと、滲みの端が途切れて見えてしまうので注意。この例でも、よく見るとちょっと途切れてしまっている。
+
+## パスを切り取る
+
+## マスク
+
+## 変形

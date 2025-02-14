@@ -1,5 +1,4 @@
 import {
-  AbsoluteFill,
   useCurrentFrame,
   useVideoConfig,
   random,
@@ -13,51 +12,44 @@ export const OverlapCircle: React.FC = () => {
   const { durationInFrames, width, height } = useVideoConfig();
 
   const numCircles = 40;
-  const radius = useMemo(() => {
+  const circles = useMemo(() => {
+    const step = interpolate(
+      frame,
+      [0, durationInFrames - 30],
+      [0, numCircles],
+      {
+        easing: Easing.out(Easing.cubic),
+      }
+    );
     return new Array(numCircles)
-    .fill(0)
-    .map((_, i) => i * 3);
-  }, [numCircles]);
-  const step = interpolate(
-    frame,
-    [0, durationInFrames - 30],
-    [0, numCircles],
-    {
-      easing: Easing.out(Easing.cubic),
-    }
-  );
-  const circles = radius.slice(0, Math.round(step));
+      .fill(0)
+      .map((_, i) => i * 3)
+      .slice(0, Math.round(step));
+  }, [frame]);
 
   return (
-    <AbsoluteFill
+    <svg
       style={{
+        position: "absolute",
+        transformBox: "fill-box",
         backgroundColor: "#f3eed5",
-        justifyContent: "center",
-        alignItems: "center",
       }}
+      viewBox={`0 0 ${width} ${height}`}
     >
       {circles.map((r, i) => {
         return (
-          <svg
+          <circle
             key={i}
-            style={{
-              position: "absolute",
-              transformBox: "fill-box",
-            }}
-            viewBox={`0 0 ${width} ${height}`}
+            cx={r}
+            cy={r}
+            r={r}
+            fill="none"
+            stroke="#e5af9b"
+            strokeWidth={3 * random(i)}
             transform={`translate(${r}, ${r})`}
-          >
-            <circle
-              cx={r}
-              cy={r}
-              r={r}
-              fill="none"
-              stroke="#e5af9b"
-              strokeWidth={3 * random(i)}
-            />
-          </svg>
+          />
         );
       })}
-    </AbsoluteFill>
+    </svg>
   );
 };

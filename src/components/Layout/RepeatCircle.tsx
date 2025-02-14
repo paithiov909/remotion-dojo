@@ -12,12 +12,12 @@ import React, { useMemo } from "react";
 import { ResizingCircle } from "./ResizeCircle";
 
 const Circles: React.FC = () => {
-  const MARGIN = 32;
-  const COLS = 15;
-  const ROWS = 12;
-
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
+
+  const margin = 32;
+  const cols = 15;
+  const rows = 12;
 
   const opacity = useMemo(() => {
     return interpolate(
@@ -37,12 +37,12 @@ const Circles: React.FC = () => {
 
   return (
     <svg width={width} height={height} style={{ overflow: "visible", opacity }}>
-      {new Array(COLS).fill(0).map((_, i) => {
-        return new Array(ROWS).fill(0).map((__, j) => {
+      {new Array(cols).fill(0).map((_, i) => {
+        return new Array(rows).fill(0).map((__, j) => {
           const key = `${i}-${j}`;
-          const r = random(`${key}-${iteration}`) * MARGIN / 2;
-          const x = i * (width + MARGIN) / COLS;
-          const y = j * (height + MARGIN) / ROWS;
+          const r = random(`${key}-${iteration}`) * margin / 2;
+          const x = i * (width + margin) / cols;
+          const y = j * (height + margin) / rows;
           return (
             <ResizingCircle
               key={key}

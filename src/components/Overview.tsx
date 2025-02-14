@@ -3,10 +3,10 @@ import {
 } from "@remotion/shapes";
 import {
   AbsoluteFill,
-  interpolate,
-  random,
   useCurrentFrame,
   useVideoConfig,
+  random,
+  interpolate,
   Easing,
 } from "remotion";
 import { useMemo } from "react";
@@ -16,6 +16,8 @@ export const MyComp = () => {
   const frame = useCurrentFrame();
 
   const numRects = 8;
+  const speed = 1.2;
+
   const rects = useMemo(() => {
     return new Array(numRects)
       .fill(0)
@@ -25,7 +27,6 @@ export const MyComp = () => {
         return { len: r, path: path };
       })
   }, [numRects]);
-  const speed = 1.2;
   const rotate = interpolate(
     frame,
     [0, durationInFrames - 10],
@@ -33,8 +34,7 @@ export const MyComp = () => {
     {
       easing: Easing.linear,
     }
-  );
-  const rt = rotate * 180 / Math.PI;
+  ) * 180 / Math.PI;
 
   return (
     <AbsoluteFill
@@ -44,7 +44,7 @@ export const MyComp = () => {
         alignItems: "center",
       }}
     >
-      <h3>{Math.floor(rt)}</h3>
+      <h3>{Math.floor(rotate)}</h3>
       <svg
         style={{
           position: "absolute",
@@ -52,7 +52,7 @@ export const MyComp = () => {
           transformBox: "fill-box",
           transformOrigin: `${width / 2 - 25} ${height / 2 - 25}`,
         }}
-        transform={`rotate(${rt})`}
+        transform={`rotate(${rotate})`}
       >
         <path
           d={makeRect({ width: 50, height: 50 }).path}
@@ -61,50 +61,46 @@ export const MyComp = () => {
           strokeWidth={2}
         />
       </svg>
-      <>
-        {rects.map((r, i) => (
-          <svg
-            key={i}
-            style={{
-              position: "absolute",
-              overflow: "visible",
-              transformBox: "fill-box",
-              transformOrigin: `center`
-            }}
-            viewBox={`0 0 ${width} ${height}`}
-            transform={`rotate(${rt + 45 * i}) scale(0.3)`}
-          >
-            <path
-              d={r.path}
-              fill="none"
-              stroke="black"
-              strokeWidth={2}
-            />
-          </svg>
-        ))}
-      </>
-      <>
-        {rects.map((r, i) => (
-          <svg
-            key={i}
-            style={{
-              position: "absolute",
-              overflow: "visible",
-              transformBox: "fill-box",
-              transformOrigin: `${r.len / 2}px ${r.len / 2}px`,
-            }}
-            viewBox={`0 0 ${width} ${height}`}
-            transform={`translate(${width / 2 - r.len}, ${height / 2}) rotate(${r.len + rt})`}
-          >
-            <path
-              d={r.path}
-              fill="none"
-              stroke="steelblue"
-              strokeWidth={2}
-            />
-          </svg>
-        ))}
-      </>
+      {rects.map((r, i) => (
+        <svg
+          key={i}
+          style={{
+            position: "absolute",
+            overflow: "visible",
+            transformBox: "fill-box",
+            transformOrigin: `center`
+          }}
+          viewBox={`0 0 ${width} ${height}`}
+          transform={`rotate(${rotate + 45 * i}) scale(0.3)`}
+        >
+          <path
+            d={r.path}
+            fill="none"
+            stroke="black"
+            strokeWidth={2}
+          />
+        </svg>
+      ))}
+      {rects.map((r, i) => (
+        <svg
+          key={i}
+          style={{
+            position: "absolute",
+            overflow: "visible",
+            transformBox: "fill-box",
+            transformOrigin: `${r.len / 2}px ${r.len / 2}px`,
+          }}
+          viewBox={`0 0 ${width} ${height}`}
+          transform={`translate(${width / 2 - r.len}, ${height / 2}) rotate(${r.len + rotate})`}
+        >
+          <path
+            d={r.path}
+            fill="none"
+            stroke="steelblue"
+            strokeWidth={2}
+          />
+        </svg>
+      ))}
     </AbsoluteFill>
   );
 };

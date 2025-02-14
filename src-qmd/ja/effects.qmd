@@ -1,7 +1,6 @@
 ---
 title: 3. Effects
 sidebar_position: 3
-draft: true
 ---
 
 ## フィルタ
@@ -11,7 +10,7 @@ CSSプロパティやSVGの属性を時間にしたがって変化させるこ�
 * [filter - CSS: カスケーディングスタイルシート | MDN](https://developer.mozilla.org/ja/docs/Web/CSS/filter)
 * [\<filter\> - SVG: スケーラブルベクターグラフィック | MDN](https://developer.mozilla.org/ja/docs/Web/SVG/Element/filter)
 
-たとえば、次の例はテキストが細くなって消えるようなエフェクトを[\<feMorphology\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feMorphology)を使って再現しようとしたもの。
+たとえば、次の例はテキストが細くなって消えるようなエフェクトを[\<feMorphology\>](https://developer.mozilla.org/ja/docs/Web/SVG/Element/feMorphology)を使って再現しようとしたもの。
 
 ::: {.panel-tabset group="Dropshadow"}
 
@@ -47,3 +46,52 @@ export const MyPlayer1 = () => (
 ```
 
 :::
+
+また、次の例はTurbulent Displaceのような「滲み」をつくるエフェクトを再現しようとしたもの。
+
+::: {.panel-tabset group="TurbulentDisplace"}
+
+## Video
+
+```{=mdx}
+import { TurbulentDisplace } from "@site/src/components/Effects/TurbulentDisplace.tsx";
+
+export const MyPlayer2 = () => (
+  <Player
+    component={TurbulentDisplace}
+    durationInFrames={180}
+    compositionWidth={768}
+    compositionHeight={432}
+    fps={30}
+    controls
+    loop
+    style={{ width: "100%" }}
+  >
+  </Player>
+);
+
+<MyPlayer2></MyPlayer2>
+
+---
+```
+
+## Code
+
+```{.tsx filename="Effects/TurbulentDisplace.tsx"}
+{{< include ../../src/components/Effects/TurbulentDisplace.tsx >}}
+```
+
+:::
+
+ここでは[\<feTurbulence\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence)を使っている。この作例のように[\<feDisplacementMap\>](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feDisplacementMap)の`scale`を徐々に大きくする場合、マッピングする元の画像も徐々に大きくしないと、滲みの端が途切れて見えてしまうので注意。この例でも、よく見るとちょっと途切れてしまっている。
+
+
+## パスを切り取る
+
+
+
+
+## マスク
+
+
+## 変形

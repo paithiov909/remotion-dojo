@@ -51,7 +51,6 @@ export const ResizeCircle: React.FC = () => {
           <AbsoluteFill style={{ backgroundColor: "#292a33" }}>
             <svg width={width} height={height} >
               <ResizingCircle
-                key={i}
                 startRadius={radii[i]}
                 endRadius={endRadius}
                 cx={width / 2}
