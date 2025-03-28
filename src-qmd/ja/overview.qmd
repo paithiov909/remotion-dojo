@@ -20,7 +20,7 @@ Compositionは、[Remotion Studio](https://www.remotion.dev/docs/terminology/stu
 
 ### ライセンス
 
-**Remotionはソースコードこそ公開されているものの、OSSではない**。[Remotion License](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md)という独自ライセンスが適用される^[coreではない一部のパッケージのなかにはMITライセンスなどが適用されているものもある]。基本的に、個人開発の場合についてのみ商用利用含め無料で利用でき、Remotionを使用する開発者を複数人要する事業所においてはライセンスを購入する必要がある。ライセンスの購入は[ Licensing | Remotion Pro](https://www.remotion.pro/license) からおこなえる。
+**Remotionはソースコードこそ公開されているものの、OSSではない**。[Remotion License](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md)という独自ライセンスが適用される^[coreではない一部のパッケージのなかにはMITライセンスなどが適用されているものもある]。基本的に、個人開発の場合についてのみ商用利用含め無料で利用でき、Remotionを使用する開発者が複数人いる事業所においてはライセンスを購入する必要がある。ライセンスの購入は[ Licensing | Remotion Pro](https://www.remotion.pro/license) からおこなえる。
 
 
 ### 使い方のイメージ
