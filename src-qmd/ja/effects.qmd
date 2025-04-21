@@ -88,7 +88,41 @@ export const MyPlayer2 = () => (
 
 ## パスを切り取る
 
+パスは[evolvePath](https://www.remotion.dev/docs/paths/evolve-path)を使うことで時間経過にしたがって伸ばすことができる。
 
+::: {.panel-tabset group="TrimCircle"}
+
+## Video
+
+```{=mdx}
+import { TrimCircle } from "@site/src/components/Effects/TrimCircle.tsx";
+
+export const MyPlayer3 = () => (
+  <Player
+    component={TrimCircle}
+    durationInFrames={90}
+    compositionWidth={768}
+    compositionHeight={432}
+    fps={30}
+    controls
+    loop
+    style={{ width: "100%" }}
+  >
+  </Player>
+);
+
+<MyPlayer3></MyPlayer3>
+
+---
+```
+
+## Code
+
+```{.tsx filename="Effects/TrimCircle.tsx"}
+{{< include ../../src/components/Effects/TrimCircle.tsx >}}
+```
+
+:::
 
 
 ## マスク

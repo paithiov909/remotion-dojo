@@ -21,7 +21,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="MyComp"
         component={TrimCircle}
-        durationInFrames={6 * fps}
+        durationInFrames={9 * 5 + 30}
         fps={fps}
         width={width}
         height={height}
